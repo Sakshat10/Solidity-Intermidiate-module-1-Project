@@ -1,22 +1,34 @@
-
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-contract ErrorControl{
-    uint256 public value;
+contract VotingContract {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+    bool public votingClosed;
 
-    function setValue(uint256 _newValue) external {
-        // require statement
-        require(_newValue != 0, "Value cannot be zero");
-        
-        // assert statement
-        assert(_newValue > value);
-        
-        // revert statement
-        if (_newValue == 999) {
-            revert("Invalid value");
+    constructor() {
+        totalVotes = 0;
+        votingClosed = false;
+    }
+
+    function vote() external {
+        require(!votingClosed, "Voting is closed.");
+        require(!hasVoted[msg.sender], "You have already voted.");
+
+        uint previousTotalVotes = totalVotes;
+        totalVotes++;
+
+        assert(totalVotes > previousTotalVotes);
+
+        // Additional voting logic can be implemented here...
+
+        if (totalVotes >= 4) {
+            votingClosed = true;
+            revert("Maximum number of votes reached. Voting closed.");
         }
-        
-        value = _newValue;
+
+        hasVoted[msg.sender] = true;
+
+        // Continue with the rest of the voting process...
     }
 }
