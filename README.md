@@ -1,54 +1,41 @@
-# AssertionContract
+# VotingContract
 
-This is a smart contract written in Solidity that demonstrates the usage of `require()`, `assert()`, and `revert()` statements for condition validation and exception handling.
-
-## Contract Overview
-
-The `AssertionContract` is a simple contract that allows updating a public variable `value` using the `setValue` function. The contract includes examples of using the three important statements:
-
-- `require()`: It is used to validate a condition and revert the transaction if the condition evaluates to `false`.
-- `assert()`: It is used to validate a condition during runtime. If the condition evaluates to `false`, it triggers an exception and reverts any changes made.
-- `revert()`: It is used to immediately revert the transaction with a specified error message.
+The `VotingContract` is a smart contract that enables users to participate in a voting process. It allows users to cast their votes and keeps track of the total number of votes received. The contract ensures that each user can vote only once and limits the maximum number of votes that can be cast.
 
 ## Usage
 
-The contract has one main function:
+1. Deploy the `VotingContract` on a compatible Ethereum blockchain network.
 
-### `setValue(uint256 _newValue)`
+2. Interact with the contract using a web3-enabled application or a compatible Ethereum client.
 
-This function updates the `value` variable with the provided `_newValue` parameter, applying condition checks using `require()`, `assert()`, and `revert()` statements.
+3. Call the `vote()` function to cast a vote. Each vote increments the total vote count by one. However, once the maximum vote limit is reached (100 votes in this example), the voting process is automatically closed.
 
-#### Parameters
+4. The contract prevents users from voting more than once. If a user attempts to vote multiple times, the transaction will be reverted, and an error message will be provided.
 
-- `_newValue`: The new value to be assigned to the `value` variable.
+## Smart Contract Details
 
-#### Condition Checks
+The `VotingContract` smart contract is implemented in Solidity and utilizes the `require()`, `assert()`, and `revert()` statements to enforce conditions, handle errors, and control the flow of the voting process.
 
-1. `require(_newValue != 0, "Value cannot be zero")`: Verifies that the new value is not zero. If the condition fails, the transaction is reverted with the provided error message.
-2. `assert(_newValue > value)`: Validates that the new value is greater than the current value. If the condition fails, it triggers an exception and reverts any changes made.
-3. `if (_newValue == 999) { revert("Invalid value"); }`: Checks if the new value is equal to 999. If it is, the transaction is immediately reverted with the specified error message.
+### Contract Functions
 
-#### Example
+- `vote()`: Allows a user to cast their vote. It checks if the voting process is closed and if the user has already voted. If the conditions are met, the user's vote is counted, and the `totalVotes` count is incremented. Once the maximum vote limit is reached, the voting process is closed, and no further votes can be cast.
 
-To use this contract, follow these steps:
+### Contract Variables
 
-1. Deploy the contract on a compatible Ethereum development environment.
-2. Call the `setValue` function, providing a non-zero value greater than the current value.
+- `totalVotes`: An unsigned integer that represents the total number of votes cast.
 
-# License
-This code is released under the MIT License.
+- `hasVoted`: A mapping that keeps track of whether a user has already voted. It maps the user's Ethereum address to a boolean value.
 
+- `votingClosed`: A boolean variable that indicates whether the voting process is closed. It is set to `true` when the maximum vote limit is reached.
 
+### Error Handling
 
-Example transaction using web3.js:
+The contract uses the `require()` statement to validate conditions such as the availability of voting, prevention of multiple votes, and the maximum vote limit. If any of these conditions are not met, the transaction is reverted with an appropriate error message.
 
-```javascript
-const contractInstance = new web3.eth.Contract(AssertionContract.abi, contractAddress);
-const newValue = 100;
-contractInstance.methods.setValue(newValue).send({ from: senderAddress })
-  .on('receipt', (receipt) => {
-    console.log("Transaction successful!");
-  })
-  .on('error', (error) => {
-    console.error("Transaction failed:", error);
-  });
+The `assert()` statement is used to check for integer overflow when incrementing the vote count. It ensures that the vote count doesn't exceed the maximum value allowed for the `uint` data type.
+
+The `revert()` statement is employed to close the voting process once the maximum vote limit is reached. It reverts the transaction and provides a custom error message to indicate that the maximum number of votes has been reached.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
